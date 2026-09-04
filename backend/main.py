@@ -18,7 +18,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS configuration: allow all local dev frontend ports and regex for localhost/127.0.0.1
+# CORS configuration: allow local dev frontend ports, Vercel deployments, and custom env origins
 origins_env = os.getenv("CORS_ORIGINS", "")
 parsed_origins = [o.strip() for o in origins_env.split(",") if o.strip()]
 
@@ -32,15 +32,17 @@ default_origins = [
 ]
 
 allowed_origins = list(set(default_origins + parsed_origins))
+is_wildcard = "*" in allowed_origins
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$",
-    allow_credentials=True,
+    allow_origins=["*"] if is_wildcard else allowed_origins,
+    allow_origin_regex=None if is_wildcard else r"^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$|^https?://.*\.vercel\.app$",
+    allow_credentials=False if is_wildcard else True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 @app.get("/health")
