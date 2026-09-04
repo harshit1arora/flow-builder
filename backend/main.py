@@ -45,6 +45,22 @@ app.add_middleware(
 
 
 
+@app.get("/")
+def root():
+    has_groq = bool(os.getenv("GROQ_API_KEY"))
+    return {
+        "service": "Flow API",
+        "description": "Agentic creative workflow graph planner for HexCoded",
+        "status": "online",
+        "groq_configured": has_groq,
+        "endpoints": {
+            "health": "/health",
+            "plan": "POST /plan",
+            "docs": "/docs",
+        },
+    }
+
+
 @app.get("/health")
 def health_check():
     has_groq = bool(os.getenv("GROQ_API_KEY"))
@@ -53,6 +69,7 @@ def health_check():
         "service": "flow-backend",
         "groq_configured": has_groq,
     }
+
 
 
 @app.post("/plan", response_model=PlanResponse)
