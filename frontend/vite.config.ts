@@ -16,7 +16,7 @@ export default defineConfig(async ({ command }) => {
   if (command === "build") {
     try {
       const { nitro } = await import("nitro/vite");
-      const preset = process.env.NITRO_PRESET || (process.env.VERCEL ? "vercel" : "cloudflare-module");
+      const preset = process.env["NITRO_PRESET"] || (process.env["VERCEL"] ? "vercel" : "cloudflare-module");
       plugins.push(
         nitro({
           defaultPreset: preset,
